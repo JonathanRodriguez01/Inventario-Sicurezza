@@ -9,14 +9,16 @@ from controllers.inventario import (
 
 productos = []  # Lista para guardar productos
 
+from termcolor import colored
+
 def mostrar_menu():
     while True:
-        print("\n📋 Menú de opciones:")
-        print("1. Crear producto")
-        print("2. Ver productos")
-        print("3. Editar producto")
-        print("4. Eliminar producto")
-        print("0. Salir")
+        print("\n" + colored("📋 Menú de opciones:", "cyan"))
+        print(colored("1. Crear producto", "green"))
+        print(colored("2. Ver productos", "yellow"))
+        print(colored("3. Editar producto", "blue"))
+        print(colored("4. Eliminar producto", "red"))
+        print(colored("0. Salir", "magenta"))
 
         opcion = input("Seleccionar una opción: ")
 
@@ -24,7 +26,7 @@ def mostrar_menu():
             producto = crear_producto_desde_input()
             if producto:
                 productos.append(producto)
-                print("✅ Producto creado.")
+                print(colored("✅ Producto creado y cargado al inventario.", "green"))
         elif opcion == "2":
             mostrar_productos(productos)
         elif opcion == "3":
@@ -32,10 +34,10 @@ def mostrar_menu():
         elif opcion == "4":
             eliminar_producto(productos)
         elif opcion == "0":
-            print("👋 Saliendo del programa...")
+            print(colored("👋 Saliendo del programa...", "magenta"))
             break
         else:
-            print("❌ Opción inválida. Intenta de nuevo.")
+            print(colored("❌ Opción inválida. Intenta de nuevo.", "red"))
 
 
 if __name__ == "__main__":
