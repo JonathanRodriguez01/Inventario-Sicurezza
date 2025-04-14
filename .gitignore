@@ -1,0 +1,15 @@
+
+# Data
+output/*.json
+
+# Ignorar bytecode de Python
+__pycache__/
+*.py[cod]
+
+# Ignorar entornos virtuales
+venv/
+env/
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
