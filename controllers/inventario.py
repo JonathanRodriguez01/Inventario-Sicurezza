@@ -9,19 +9,21 @@ productos = []  # Lista global de productos
 def cargar_productos():
     global productos
     try:
-        productos = read_json_file("productos.json")
-        if not productos:
+        datos = read_json_file("productos.json")
+        if not datos:
             print(colored("📂 No se encontraron productos en el archivo, comenzamos con un inventario vacío.", "yellow"))
         else:
+            productos = [Producto.from_dict(p) for p in datos]
             print(colored(f"📂 Productos cargados desde archivo: {len(productos)} productos.", "green"))
     except Exception as e:
         print(f"⚠️ Error al cargar los productos: {e}")
-        print("Comenzando con inventario vacío.")
+        productos = []
 
 # Función para guardar productos antes de salir
 def guardar_productos():
     try:
-        write_json_file("productos.json", productos)
+        data = [p.to_dict() for p in productos]
+        write_json_file("productos.json", data)
         print(colored("✅ Los productos han sido guardados correctamente.", "green"))
     except Exception as e:
         print(f"⚠️ Error al guardar los productos: {e}")
@@ -41,7 +43,7 @@ def crear_producto_desde_input():
         print(f"💡 Precio de lista (con 100% de ganancia): ${precio_lista:.2f}")
 
         stock = int(input("📦 Stock disponible: "))
-        return Producto(nombre, categoria, precio_lista, stock)
+        return Producto(nombre, categoria, precio_costo, precio_lista, stock)
 
     except ValueError:
         print("⚠️  Entrada inválida. Intenta nuevamente.")
@@ -54,7 +56,11 @@ def mostrar_productos(lista_productos):
         return
 
     for idx, prod in enumerate(lista_productos, start=1):
-        print(colored(f"{idx}. {prod.nombre} - {prod.categoria} - ${prod.precio_costo:.2f} - Stock: {prod.stock}", "cyan"))
+        print(colored(  f"📦 {idx}. {prod.nombre} - {prod.categoria}\n"
+        f"   💰 Costo: ${prod.precio_costo:.2f} | 🏷️ Lista: ${prod.precio_lista:.2f}\n"
+        f"   📊 Stock: {prod.stock}",
+        "cyan"
+    ))
 
 # Editar un producto existente
 def editar_producto(lista_productos):
@@ -128,3 +134,4 @@ def mostrar_menu():
             break
         else:
             print(colored("❌ Opción inválida. Intenta de nuevo.", "red"))
+
