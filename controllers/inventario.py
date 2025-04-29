@@ -2,28 +2,26 @@ from helpers.utils_json import read_json_file, write_json_file
 from termcolor import colored
 from producto import Producto
 from helpers.utils import calcular_precio_venta
-
-productos = []  # Lista global de productos
+from helpers.converter import dict_a_producto
 
 # Cargar productos desde el archivo JSON
 def cargar_productos():
-    global productos
     try:
-        datos = read_json_file("productos.json")
-        if not datos:
+        productos_dict = read_json_file("productos.json")
+        if not productos_dict:
             print(colored("📂 No se encontraron productos en el archivo, comenzamos con un inventario vacío.", "yellow"))
+            return []
         else:
-            productos = [Producto.from_dict(p) for p in datos]
+            productos = [dict_a_producto(prod_dict) for prod_dict in productos_dict]
             print(colored(f"📂 Productos cargados desde archivo: {len(productos)} productos.", "green"))
+            return productos
     except Exception as e:
         print(f"⚠️ Error al cargar los productos: {e}")
-        productos = []
-
+        return []
 # Función para guardar productos antes de salir
-def guardar_productos():
+def guardar_productos(productos):
     try:
-        data = [p.to_dict() for p in productos]
-        write_json_file("productos.json", data)
+        write_json_file("productos.json", productos)
         print(colored("✅ Los productos han sido guardados correctamente.", "green"))
     except Exception as e:
         print(f"⚠️ Error al guardar los productos: {e}")
@@ -31,18 +29,30 @@ def guardar_productos():
 # Crear un producto desde la entrada del usuario
 def crear_producto_desde_input():
     try:
-        nombre = input("📦 Nombre del producto: ")
-        categoria = input("🏷️  Categoría del producto: ")
+        nombre = input("📦 Nombre del producto: ").strip()
+        if not nombre:
+            print("⚠️ El nombre no puede estar vacío")
+            return None
+        
+        categoria = input("🏷️  Categoría del producto: ").strip()
+        if not categoria:
+            print("⚠️ La categoría no puede estar vacía")
+            return None
 
         precio_costo = float(input("💰 Precio de costo: "))
         if precio_costo <= 0:
-            print("⚠️ El precio de costo debe ser mayor que cero.")
+            print("⚠️ El precio de costo debe ser mayor que cero.") 
             return None
 
         precio_lista = calcular_precio_venta(precio_costo)
         print(f"💡 Precio de lista (con 100% de ganancia): ${precio_lista:.2f}")
 
         stock = int(input("📦 Stock disponible: "))
+
+        if stock <0:
+            print("⚠️ El stock no puede ser negativo")
+            return None
+                    
         return Producto(nombre, categoria, precio_costo, precio_lista, stock)
 
     except ValueError:
@@ -71,20 +81,34 @@ def editar_producto(lista_productos):
             producto = lista_productos[indice]
             print(f"✏️ Editando: {producto.nombre}")
 
-            nuevo_nombre = input("Nuevo nombre (dejar vacío para mantener): ")
-            nueva_categoria = input("Nueva categoría (dejar vacío para mantener): ")
-            nuevo_precio = input("Nuevo precio de costo (dejar vacío para mantener): ")
-            nuevo_stock = input("Nuevo stock (dejar vacío para mantener): ")
+            nuevo_nombre = input("Nuevo nombre (dejar vacío para mantener): ").strip()
+            nueva_categoria = input("Nueva categoría (dejar vacío para mantener): ").strip()
+            nuevo_precio = input("Nuevo precio de costo (dejar vacío para mantener): ").strip()
+            nuevo_stock = input("Nuevo stock (dejar vacío para mantener): ").strip()
 
             if nuevo_nombre:
                 producto.nombre = nuevo_nombre
             if nueva_categoria:
                 producto.categoria = nueva_categoria
             if nuevo_precio:
-                precio = float(nuevo_precio)
-                producto.precio_costo = calcular_precio_venta(precio)
+                try:
+                    precio = float(nuevo_precio)
+                    if precio <= 0:
+                        print("⚠️ El precio debe ser mayor que cero. No se actualizó el precio.")
+                    else:
+                        producto.precio_costo = precio
+                        producto.precio_lista = calcular_precio_venta(precio)
+                except ValueError:
+                    print("⚠️ Precio inválido. No se actualizó el precio.")
             if nuevo_stock:
-                producto.stock = int(nuevo_stock)
+                try:
+                    stock = int(nuevo_stock)
+                    if stock < 0:
+                        print("⚠️ El stock no puede ser negativo. No se actualizó el stock.")
+                    else:
+                        producto.stock = stock
+                except ValueError:
+                    print("⚠️ Stock inválido. No se actualizó el stock.")
 
             print(colored("✅ Producto actualizado.", "green"))
         else:
@@ -106,7 +130,7 @@ def eliminar_producto(lista_productos):
         print(colored("⚠️ Entrada inválida.", "red"))
 
 # Función principal del menú
-def mostrar_menu():
+def mostrar_menu(productos):
     while True:
         print("\n" + colored("📋 Menú de opciones:", "cyan"))
         print(colored("1. Crear producto", "green"))
@@ -129,7 +153,7 @@ def mostrar_menu():
         elif opcion == "4":
             eliminar_producto(productos)
         elif opcion == "0":
-            guardar_productos()
+            guardar_productos(productos)
             print(colored("👋 Saliendo del programa...", "magenta"))
             break
         else:
