@@ -1,14 +1,18 @@
+# Salida de datos
+output/*
+!output/.keep
 
-# Data
-output/*.json
+# Archivos CSV
+*.csv
 
-# Ignorar bytecode de Python
+# Bytecode de Python
 __pycache__/
 *.py[cod]
 
-# Ignorar entornos virtuales
+# Entornos virtuales
 venv/
 env/
+.venv/
 
 # Archivos del sistema operativo
 .DS_Store
