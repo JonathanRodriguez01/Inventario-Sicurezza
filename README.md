@@ -2,7 +2,7 @@
 
 Este proyecto es un sistema de gestión de inventario básico desarrollado en Python como parte del curso **Python Full Stack + FastAPI** del ITU UNCuyo.
 
-Permite crear, ver, editar y eliminar productos, guardar los datos en un archivo JSON, y exportarlos a un archivo CSV para su análisis.
+Permite **crear, ver, editar y eliminar productos**, guardar los datos en un archivo JSON y exportarlos a un archivo CSV para su análisis.
 
 ---
 
@@ -12,78 +12,60 @@ Permite crear, ver, editar y eliminar productos, guardar los datos en un archivo
 - 📋 Ver productos cargados  
 - ✏️ Editar productos existentes  
 - 🗑️ Eliminar productos  
-- 💾 Guardar automáticamente los productos en un archivo `productos.json`  
-- 📤 Exportar los productos a un archivo CSV en la carpeta `output/`  
+- 💾 Guardado automático en `productos.json`  
+- 📤 Exportación automática a `output/productos.csv` al finalizar
 
 ---
 
 ## ⚙️ Tecnologías y dependencias
 
 - Python 3.10+
-- [`termcolor`](https://pypi.org/project/termcolor/) para colorear la salida en consola
+- [`termcolor`](https://pypi.org/project/termcolor/) – Colores en consola
 
-Instalación con pip:
+### 📦 Instalación rápida
 
 ```bash
 pip install termcolor
 
 🧱 Estructura del proyecto
-📁 controllers/
-    └── inventario.py
-📁 helpers/
-    ├── utils.py
-    ├── utils_json.py
-    └── converter.py
-📁 output/
-    └── productos.csv (se genera automáticamente)
-📄 producto.py
-📄 main.py
-📄 .gitignore
-📄 README.md
-📄 productos.json
-
-📦 Requisitos del sistema
-Python 3.10 o superior
-
-Git instalado (opcional)
+.
+├── controllers/
+│   └── inventario.py
+├── helpers/
+│   ├── utils.py
+│   ├── utils_json.py
+│   └── converter.py
+├── models/
+│   └── producto.py
+├── output/
+│   └── productos.csv  ← Se genera automáticamente
+├── main.py
+├── productos.json     ← Datos persistentes
+├── README.md
+├── .gitignore
 
 🧪 Cómo ejecutar el proyecto
-1. Crear entorno virtual
+Crear entorno virtual:
 python -m venv venv
 
-2. Activar entorno virtual
-Windows:
-venv\Scripts\activate
+Activar entorno virtual:
 
-Mac/Linux:
-source venv/bin/activate
+Windows: venv\Scripts\activate
 
-3. Instalar dependencias
-pip install -r requirements.txt
+Mac/Linux: source venv/bin/activate
 
-Si no tenés un archivo requirements.txt, podés instalar manualmente:
+Instalar dependencias:
 pip install termcolor
 
-4. Ejecutar la app
+Ejecutar la app:
 python main.py
 
 📝 Consideraciones
-Todos los datos se guardan en el archivo productos.json.
+Todos los productos se guardan en productos.json
 
-El archivo CSV se genera automáticamente dentro de output/ al salir del programa.
+El CSV se genera automáticamente al salir del programa
 
-El proyecto sigue los principios básicos de la programación orientada a objetos (POO).
-
-🧾 .gitignore
-El archivo .gitignore evita que archivos innecesarios se suban a GitHub. Incluye exclusiones para:
-
-output/*.csv y productos.json
-
-__pycache__/ y archivos .pyc
-
-Carpetas de entornos virtuales venv/, env/
-
-Archivos del sistema como .DS_Store
+El proyecto sigue principios básicos de Programación Orientada a Objetos
 
 🧑‍💻 Autor
 JonathanRodriguez01

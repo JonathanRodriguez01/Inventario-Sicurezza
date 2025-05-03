@@ -1,39 +1,76 @@
+"""
+Este archivo contiene las funciones relacionadas con la gestión del inventario.
+Incluye funcionalidades CRUD (crear, leer, actualizar, eliminar) para los productos
+y la persistencia de los mismos en un archivo JSON.
+
+Autor: Jonathan Rodríguez
+"""
+
+from json import JSONDecodeError  # Standard library
+from termcolor import colored     # Third-party library
+
+# First-party (proyecto)
 from helpers.utils_json import read_json_file, write_json_file
-from termcolor import colored
-from producto import Producto
 from helpers.utils import calcular_precio_venta
 from helpers.converter import dict_a_producto
+from producto import Producto
 
-# Cargar productos desde el archivo JSON
-def cargar_productos():
+def crear_productos():
+    """
+    Carga los productos desde un archivo JSON.
+
+    Retorna:
+        list: Lista de objetos Producto cargados desde el archivo.
+    """
     try:
         productos_dict = read_json_file("productos.json")
         if not productos_dict:
-            print(colored("📂 No se encontraron productos en el archivo, comenzamos con un inventario vacío.", "yellow"))
+            print(colored(
+                "📂 No se encontraron productos en el archivo. "
+                "Comenzamos con un inventario vacío.", 
+                "yellow"
+            ))
             return []
-        else:
-            productos = [dict_a_producto(prod_dict) for prod_dict in productos_dict]
-            print(colored(f"📂 Productos cargados desde archivo: {len(productos)} productos.", "green"))
-            return productos
-    except Exception as e:
-        print(f"⚠️ Error al cargar los productos: {e}")
+        productos = [dict_a_producto(prod_dict) for prod_dict in productos_dict]
+        print(colored(
+            f"📂 Productos cargados desde archivo: {len(productos)} productos.",
+            "green"
+        ))
+        return productos
+    except JSONDecodeError:
+        print(colored("❌ Error: El archivo JSON está corrupto o mal formado.", "red"))
         return []
-# Función para guardar productos antes de salir
+    except OSError as e:
+        print(colored(f"❌ Error de lectura de archivo: {e}", "red"))
+        return []
+
 def guardar_productos(productos):
+    """
+    Guarda la lista de productos en un archivo JSON.
+
+    Parámetros:
+        productos (list): Lista de objetos Producto a guardar.
+    """
     try:
         write_json_file("productos.json", productos)
         print(colored("✅ Los productos han sido guardados correctamente.", "green"))
-    except Exception as e:
-        print(f"⚠️ Error al guardar los productos: {e}")
+    except OSError as e:
+        print(colored(f"❌ Error al acceder al archivo para guardar: {e}", "red"))
+    except TypeError as e:
+        print(colored(f"❌ Error de datos al guardar productos: {e}", "red"))
 
-# Crear un producto desde la entrada del usuario
 def crear_producto_desde_input():
+    """
+    Solicita datos al usuario para crear un nuevo producto.
+
+    Retorna:
+        Producto: Objeto Producto creado, o None si hubo un error.
+    """
     try:
         nombre = input("📦 Nombre del producto: ").strip()
         if not nombre:
             print("⚠️ El nombre no puede estar vacío")
             return None
-        
         categoria = input("🏷️  Categoría del producto: ").strip()
         if not categoria:
             print("⚠️ La categoría no puede estar vacía")
@@ -41,7 +78,7 @@ def crear_producto_desde_input():
 
         precio_costo = float(input("💰 Precio de costo: "))
         if precio_costo <= 0:
-            print("⚠️ El precio de costo debe ser mayor que cero.") 
+            print("⚠️ El precio de costo debe ser mayor que cero.")
             return None
 
         precio_lista = calcular_precio_venta(precio_costo)
@@ -49,31 +86,41 @@ def crear_producto_desde_input():
 
         stock = int(input("📦 Stock disponible: "))
 
-        if stock <0:
+        if stock < 0:
             print("⚠️ El stock no puede ser negativo")
             return None
-                    
         return Producto(nombre, categoria, precio_costo, precio_lista, stock)
 
     except ValueError:
         print("⚠️  Entrada inválida. Intenta nuevamente.")
         return None
 
-# Mostrar todos los productos
 def mostrar_productos(lista_productos):
+    """
+    Muestra por consola todos los productos del inventario.
+
+    Parámetros:
+        lista_productos (list): Lista de objetos Producto a mostrar.
+    """
     if not lista_productos:
         print(colored("📭 No hay productos en el inventario.", "yellow"))
         return
 
     for idx, prod in enumerate(lista_productos, start=1):
-        print(colored(  f"📦 {idx}. {prod.nombre} - {prod.categoria}\n"
-        f"   💰 Costo: ${prod.precio_costo:.2f} | 🏷️ Lista: ${prod.precio_lista:.2f}\n"
-        f"   📊 Stock: {prod.stock}",
-        "cyan"
-    ))
+        print(colored(
+            f"📦 {idx}. {prod.nombre} - {prod.categoria}\n"
+            f"   💰 Costo: ${prod.precio_costo:.2f} | 🏷️ Lista: ${prod.precio_lista:.2f}\n"
+            f"   📊 Stock: {prod.stock}",
+            "cyan"
+        ))
 
-# Editar un producto existente
 def editar_producto(lista_productos):
+    """
+    Permite al usuario modificar un producto del inventario.
+
+    Parámetros:
+        lista_productos (list): Lista de productos existentes.
+    """
     mostrar_productos(lista_productos)
     try:
         indice = int(input("🔧 Ingrese el número del producto que desea editar: ")) - 1
@@ -116,8 +163,13 @@ def editar_producto(lista_productos):
     except ValueError:
         print(colored("⚠️ Entrada inválida.", "red"))
 
-# Eliminar un producto del inventario
 def eliminar_producto(lista_productos):
+    """
+    Permite eliminar un producto del inventario por su índice.
+
+    Parámetros:
+        lista_productos (list): Lista de productos existentes.
+    """
     mostrar_productos(lista_productos)
     try:
         indice = int(input("🗑️ Ingrese el número del producto a eliminar: ")) - 1
@@ -129,8 +181,13 @@ def eliminar_producto(lista_productos):
     except ValueError:
         print(colored("⚠️ Entrada inválida.", "red"))
 
-# Función principal del menú
 def mostrar_menu(productos):
+    """
+    Muestra el menú principal de opciones y gestiona la navegación del usuario.
+
+    Parámetros:
+        productos (list): Lista de productos actual que se modifica durante la ejecución.
+    """
     while True:
         print("\n" + colored("📋 Menú de opciones:", "cyan"))
         print(colored("1. Crear producto", "green"))
@@ -158,4 +215,3 @@ def mostrar_menu(productos):
             break
         else:
             print(colored("❌ Opción inválida. Intenta de nuevo.", "red"))
-

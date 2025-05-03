@@ -1,19 +1,19 @@
-# Salida de datos
-output/*
-!output/.keep
-
-# Archivos CSV
-*.csv
-
-# Bytecode de Python
-__pycache__/
-*.py[cod]
-
 # Entornos virtuales
 venv/
 env/
-.venv/
 
-# Archivos del sistema operativo
+# Archivos de Python compilados
+__pycache__/
+*.pyc
+
+# Archivos del sistema
 .DS_Store
 Thumbs.db
+
+# Archivos de salida del proyecto
+output/*.csv
+productos.json
+
+# Archivos de configuración locales (opcional)
+*.log
+*.env
